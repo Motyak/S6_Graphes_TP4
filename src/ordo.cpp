@@ -97,9 +97,9 @@ void graphe::affichage()
 	// }
 
 	cout << "arête : " << "longueur" << endl;
-	for(int i = 0; i < Lsucc.size(); i++){
-		for(int j = 0; j < Lsucc[i].size(); j++)
-			cout << "(" << i << "," << Lsucc[i][j].first << ")" << ": " << Lsucc[i][j].second << endl;
+	for(int i = 0; i < Lpred.size(); i++){
+		for(int j = 0; j < Lpred[i].size(); j++)
+			cout << "(" << Lpred[i][j].first << "," << i << ")" << ": " << Lpred[i][j].second << endl;
 	}
 }
 
