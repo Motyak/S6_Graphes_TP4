@@ -90,10 +90,16 @@ graphe::graphe(char* filename)
 /****************************************/
 void graphe::affichage()
 {
+	// cout << "arête : " << "longueur" << endl;
+	// for(int i = 0; i < Lpred.size(); i++){
+	// 	for(int j = 0; j < Lpred[i].size(); j++)
+	// 		cout << "(" << i << "," << Lpred[i][j].first << ")" << ": " << Lpred[i][j].second << endl;
+	// }
+
 	cout << "arête : " << "longueur" << endl;
-	for(int i = 0; i < Lpred.size(); i++){
-		for(int j = 0; j < Lpred[i].size(); j++)
-			cout << "(" << i << "," << Lpred[i][j].first << ")" << ": " << Lpred[i][j].second << endl;
+	for(int i = 0; i < Lsucc.size(); i++){
+		for(int j = 0; j < Lsucc[i].size(); j++)
+			cout << "(" << i << "," << Lsucc[i][j].first << ")" << ": " << Lsucc[i][j].second << endl;
 	}
 }
 
@@ -108,7 +114,7 @@ void graphe::resultats()
 	cout << " Debut \t| " << "+tôt\t| " << "+tard" << "\t|" << endl;
 	cout << "-------------------------" << endl;
 	// for(int i = 0; i < n; i++)
-	for(int i = 1; i < n + 1; i++)
+	for(int i = 0; i <= n + 1; i++)
 		cout << i << " \t| " << plustot[i] << "\t| " << plustard[i] << "\t|" << endl;
 	cout << "-------------------------" << endl;
 }
