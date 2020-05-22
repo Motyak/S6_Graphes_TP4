@@ -36,7 +36,7 @@ graphe::graphe(char* filename)
     file >> this->n;
     
 	//on ajoute la source a 0
-    int duree[this->n + 1]; 
+	int duree[this->n + 1];
 	duree[0] = 0;
 	this->Lpred.push_back(std::vector<sommetadjacent>());
 	this->Lsucc.push_back(std::vector<sommetadjacent>());
@@ -48,10 +48,13 @@ graphe::graphe(char* filename)
 		this->Lpred.push_back(std::vector<sommetadjacent>());
 		this->Lsucc.push_back(std::vector<sommetadjacent>());
 	}
+	// ajout emplacement pred de la fin de projet et succ de derniere tache
+	this->Lpred.push_back(std::vector<sommetadjacent>());
+	this->Lsucc.push_back(std::vector<sommetadjacent>());
 
 // ajout predecesseur de la premiere tache et successeur de la source
-	this->Lpred[1].push_back(make_pair(0, duree[1]));
-	this->Lsucc[0].push_back(make_pair(1, duree[1]));
+	this->Lpred[1].push_back(make_pair(0, duree[0]));
+	this->Lsucc[0].push_back(make_pair(1, duree[0]));
 		
 
 	int idTache, nbPred, pred;
@@ -64,8 +67,17 @@ graphe::graphe(char* filename)
 		for(int i = 1 ; i <= nbPred ; ++i)
 		{
 			file >> pred;
-			this->Lpred[idTache].push_back(std::make_pair(pred, duree[idTache]));
-			this->Lsucc[pred].push_back(std::make_pair(idTache, duree[idTache]));
+			this->Lpred[idTache].push_back(std::make_pair(pred, duree[pred]));
+			this->Lsucc[pred].push_back(std::make_pair(idTache, duree[pred]));
+		}
+	}
+	// ajouter le sommet fin de projet à toutes les taches qui n'ont pas de sucesseurs
+	for(int i = 0 ; i <= this->n ; ++i)
+	{
+		if(this->Lsucc[i].empty())
+		{
+			this->Lpred[this->n + 1].push_back(std::make_pair(i, duree[i]));
+			this->Lsucc[i].push_back(std::make_pair(this->n + 1, duree[i]));
 		}
 	}
         
