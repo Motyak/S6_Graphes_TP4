@@ -96,7 +96,7 @@ void graphe::affichage()
 	// 		cout << "(" << i << "," << Lpred[i][j].first << ")" << ": " << Lpred[i][j].second << endl;
 	// }
 
-	cout << "arête : " << "longueur" << endl;
+	cout << "arc : " << "durée" << endl;
 	for(int i = 0; i < Lpred.size(); i++){
 		for(int j = 0; j < Lpred[i].size(); j++)
 			cout << "(" << Lpred[i][j].first << "," << i << ")" << ": " << Lpred[i][j].second << endl;
@@ -131,6 +131,7 @@ void graphe::ordo()
 {
     // !!! A FAIRE !!! //
 	this->calculDateAuPlusTot();
+	this->calculDateAuPlusTard();
 }
 
 void graphe::calculDateAuPlusTot()
@@ -175,6 +176,64 @@ void graphe::calculDateAuPlusTot()
 
         //Suppression de l'indice j du tas (premier element tas)
         std::pop_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
+
+        //Mettre a jour I en fonction du nouveau T
+        I[j] = -1;    //j est la valeur du noeud qui a disparue du tas
+        for(int z = 0 ; z < this->n - l ; ++z)
+            I[T[z]] = z;
+    }
+}
+
+void graphe::calculDateAuPlusTard()
+{
+	//INIT
+	int* T = new int[this->n + 1];
+    int* I = new int[this->n + 1];
+    this->plustard = new int[this->n + 1];
+    int* pere = new int[this->n + 1];
+
+	int i = 0;
+    for(; i < this->n ; ++i)
+        T[i] = i + 1;
+    for(i = 0 ; i < this->n + 1 ; ++i)
+        I[i] = i - 1;
+    this->plustard[0] = 0;
+    for(i = 1 ; i < this->n + 1 ; ++i)
+        this->plustard[i] = -infini;
+	this->plustard[this->n + 1] = this->plustot[this->n + 1];	//
+
+    /* tableau pere initialisé à 0 par défaut en c++ */
+    int j = this->n + 1;  //noeud pivot initial
+
+    for(int l = 1 ; l < this->n + 1  ; ++l)
+    {
+        // pour chaque predecesseur de j..
+        for(sommetadjacent s : this->Lpred[j])
+        {
+            int i = s.first, cji = s.second;
+
+			int min = infini;
+			for(int z = j ; z <= this->n + 1 ; ++z)
+			{
+				if(this->plustard[z] - cji < min)
+					min = this->plustard[z] - cji;
+			}
+
+            if(I[i] > -1 && min > this->plustard[i])
+            { 
+                this->plustard[i] = min;
+                pere[i] = j;
+
+                //reorganisation du tas T [ à partir de l'indice I[i] ]
+                std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustard));
+            }
+        }
+
+        //Recherche dans T, de l'indice j de plus grande valeur d[i]
+        j = T[0]; //sinon j reste à 0
+
+        //Suppression de l'indice j du tas (premier element tas)
+        std::pop_heap(T, T + this->n + 1 - l, Cmp(this->plustard));
 
         //Mettre a jour I en fonction du nouveau T
         I[j] = -1;    //j est la valeur du noeud qui a disparue du tas

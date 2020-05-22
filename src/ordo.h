@@ -17,6 +17,7 @@ class graphe{
 	int *plustard;		// Tableau stockant les dates de début au plus tard de toutes les tâches
 
 	void calculDateAuPlusTot();
+	void calculDateAuPlusTard();
 
 public : 
 	graphe(char* filename);
