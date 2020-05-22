@@ -170,10 +170,10 @@ void graphe::calculDateAuPlusTot()
 
             if(I[i] > -1 && sum > this->plustot[i])
             { 
-                std::cout<<"On part du sommet "<<j<<std::endl;//debug
-                std::cout<<"la tache "<<i<<" passe de "<<this->plustot[i];//debug
+                // std::cout<<"On part du sommet "<<j<<std::endl;//debug
+                // std::cout<<"la tache "<<i<<" passe de "<<this->plustot[i];//debug
                 this->plustot[i] = sum;
-                std::cout<<" a "<<this->plustot[i]<<std::endl<<std::endl;//debug
+                // std::cout<<" a "<<this->plustot[i]<<std::endl<<std::endl;//debug
 
                 //reorganisation du tas T [ à partir de l'indice I[i] ]
                 std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
