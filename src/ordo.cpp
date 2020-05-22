@@ -136,23 +136,23 @@ void graphe::ordo()
 void graphe::calculDateAuPlusTot()
 {
 	//INIT
-	int* T = new int[this->n];
-    int* I = new int[this->n];
-    this->plustot = new int[this->n];
-    int* pere = new int[this->n];
+	int* T = new int[this->n + 1];
+    int* I = new int[this->n + 1];
+    this->plustot = new int[this->n + 1];
+    int* pere = new int[this->n + 1];
 
 	int i = 0;
-    for(; i < this->n - 1 ; ++i)
+    for(; i < this->n ; ++i)
         T[i] = i + 1;
-    for(i = 0 ; i < this->n ; ++i)
+    for(i = 0 ; i < this->n + 1 ; ++i)
         I[i] = i - 1;
     this->plustot[0] = 0;
-    for(i = 1 ; i < this->n ; ++i)
+    for(i = 1 ; i < this->n + 1 ; ++i)
         this->plustot[i] = -infini;
     /* tableau pere initialisé à 0 par défaut en c++ */
     int j = 0;  //noeud pivot initial
 
-    for(int l = 1 ; l < this->n  ; ++l)
+    for(int l = 1 ; l < this->n + 1  ; ++l)
     {
         // pour chaque successeur de j..
         for(sommetadjacent s : this->Lsucc[j])
@@ -166,7 +166,7 @@ void graphe::calculDateAuPlusTot()
                 pere[i] = j;
 
                 //reorganisation du tas T [ à partir de l'indice I[i] ]
-                std::make_heap(T, T + this->n - l, Cmp(this->plustot));
+                std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
             }
         }
 
@@ -174,11 +174,11 @@ void graphe::calculDateAuPlusTot()
         j = T[0]; //sinon j reste à 0
 
         //Suppression de l'indice j du tas (premier element tas)
-        std::pop_heap(T, T + this->n - l, Cmp(this->plustot));
+        std::pop_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
 
         //Mettre a jour I en fonction du nouveau T
         I[j] = -1;    //j est la valeur du noeud qui a disparue du tas
-        for(int z = 0 ; z < this->n - 1 - l ; ++z)
+        for(int z = 0 ; z < this->n - l ; ++z)
             I[T[z]] = z;
     }
 }
