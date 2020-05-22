@@ -2,10 +2,22 @@
 #include <fstream>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
 #include "ordo.h"
+
+Cmp::Cmp(int* d)
+{
+    this->d = d;
+}
+
+// max heap
+bool Cmp::operator()(const int a, const int b)
+{
+    return this->d[a] < this->d[b];
+}
 
 /**************************************
 Objectif : Constructeur de la classe.
@@ -19,6 +31,37 @@ Objectif : Constructeur de la classe.
 graphe::graphe(char* filename)
 {
     // !!! A FAIRE !!! //
+	ifstream file(filename);
+
+    file >> this->n;
+    
+    int duree[this->n];
+	for(int i = 0 ; i < this->n ; ++i)
+	{
+		file >> duree[i];
+		this->Lpred.push_back(std::vector<sommetadjacent>());
+		this->Lsucc.push_back(std::vector<sommetadjacent>());
+	}
+		
+
+	int idTache, nbPred, pred;
+
+	for(int i = 0 ; i < this->n ; ++i) 
+	{
+		file >> idTache;
+		--idTache;
+		file >> nbPred;
+
+		for(int i = 1 ; i <= nbPred ; ++i)
+		{
+			file >> pred;
+			--pred;
+			this->Lpred[idTache].push_back(std::make_pair(pred, duree[pred]));
+			this->Lsucc[pred].push_back(std::make_pair(idTache, duree[pred]));
+		}
+	}
+        
+    file.close();
 }
 
 
@@ -60,4 +103,55 @@ Pour chaque noeud i du graphe potentiel-tâches :
 void graphe::ordo()
 {
     // !!! A FAIRE !!! //
+	this->calculDateAuPlusTot();
+}
+
+void graphe::calculDateAuPlusTot()
+{
+	//INIT
+	int* T = new int[this->n];
+    int* I = new int[this->n];
+    this->plustot = new int[this->n];
+    int* pere = new int[this->n];
+
+	int i = 0;
+    for(; i < this->n - 1 ; ++i)
+        T[i] = i + 1;
+    for(i = 0 ; i < this->n ; ++i)
+        I[i] = i - 1;
+    this->plustot[0] = 0;
+    for(i = 1 ; i < this->n ; ++i)
+        this->plustot[i] = -infini;
+    /* tableau pere initialisé à 0 par défaut en c++ */
+    int j = 0;  //noeud pivot initial
+
+    for(int l = 1 ; l < this->n  ; ++l)
+    {
+        // pour chaque successeur de j..
+        for(sommetadjacent s : this->Lsucc[j])
+        {
+            int i = s.first, cji = s.second;
+            int sum = this->plustot[j] + cji;
+
+            if(I[i] > -1 && sum > this->plustot[i])
+            { 
+                this->plustot[i] = sum;
+                pere[i] = j;
+
+                //reorganisation du tas T [ à partir de l'indice I[i] ]
+                std::make_heap(T, T + this->n - l, Cmp(this->plustot));
+            }
+        }
+
+        //Recherche dans T, de l'indice j de plus grande valeur d[i]
+        j = T[0]; //sinon j reste à 0
+
+        //Suppression de l'indice j du tas (premier element tas)
+        std::pop_heap(T, T + this->n - l, Cmp(this->plustot));
+
+        //Mettre a jour I en fonction du nouveau T
+        I[j] = -1;    //j est la valeur du noeud qui a disparue du tas
+        for(int z = 0 ; z < this->n - 1 - l ; ++z)
+            I[T[z]] = z;
+    }
 }

@@ -16,9 +16,19 @@ class graphe{
 	int *plustot;		// Tableau stockant les dates de début au plus tôt de toutes les tâches
 	int *plustard;		// Tableau stockant les dates de début au plus tard de toutes les tâches
 
+	void calculDateAuPlusTot();
+
 public : 
 	graphe(char* filename);
 	void affichage();
 	void ordo();
 	void resultats();
+};
+
+class Cmp
+{
+public:
+	int* d;
+	Cmp(int* d);
+	bool operator()(const int a, const int b);
 };
