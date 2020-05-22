@@ -52,9 +52,9 @@ graphe::graphe(char* filename)
 	this->Lpred.push_back(std::vector<sommetadjacent>());
 	this->Lsucc.push_back(std::vector<sommetadjacent>());
 
-// ajout predecesseur de la premiere tache et successeur de la source
-	this->Lpred[1].push_back(make_pair(0, duree[0]));
-	this->Lsucc[0].push_back(make_pair(1, duree[0]));
+// // ajout predecesseur de la premiere tache et successeur de la source
+// 	this->Lpred[1].push_back(make_pair(0, duree[0]));
+// 	this->Lsucc[0].push_back(make_pair(1, duree[0]));
 		
 
 	int idTache, nbPred, pred;
@@ -71,10 +71,18 @@ graphe::graphe(char* filename)
 			this->Lsucc[pred].push_back(std::make_pair(idTache, duree[pred]));
 		}
 	}
-	// ajouter le sommet fin de projet à toutes les taches qui n'ont pas de sucesseurs
-	for(int i = 0 ; i <= this->n ; ++i)
+	
+	for(int i = 1 ; i <= this->n ; ++i)
 	{
-		if(this->Lsucc[i].empty())
+        // ajouter le sommet début de projet à toutes les taches qui n'ont pas de predecesseur
+        if(this->Lpred[i].empty())
+		{
+			this->Lpred[i].push_back(std::make_pair(0, 0));
+			this->Lsucc[0].push_back(std::make_pair(i, 0));
+		}
+
+        // ajouter le sommet fin de projet à toutes les taches qui n'ont pas de sucesseurs
+		else if(this->Lsucc[i].empty())
 		{
 			this->Lpred[this->n + 1].push_back(std::make_pair(i, duree[i]));
 			this->Lsucc[i].push_back(std::make_pair(this->n + 1, duree[i]));
@@ -162,10 +170,10 @@ void graphe::calculDateAuPlusTot()
 
             if(I[i] > -1 && sum > this->plustot[i])
             { 
-                // std::cout<<"On part du sommet "<<j<<std::endl;//debug
-                // std::cout<<"la tache "<<i<<" passe de "<<this->plustot[i];//debug
+                std::cout<<"On part du sommet "<<j<<std::endl;//debug
+                std::cout<<"la tache "<<i<<" passe de "<<this->plustot[i];//debug
                 this->plustot[i] = sum;
-                // std::cout<<" a "<<this->plustot[i]<<std::endl<<std::endl;//debug
+                std::cout<<" a "<<this->plustot[i]<<std::endl<<std::endl;//debug
 
                 //reorganisation du tas T [ à partir de l'indice I[i] ]
                 std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
@@ -210,7 +218,6 @@ void graphe::calculDateAuPlusTard()
         // pour chaque predecesseur de j..
         for(sommetadjacent s : this->Lpred[j])
         {
-            std::cout<<"Le sommet j a des predecesseurs"<<std::endl;//debug
             int i = s.first, cji = s.second;
 
 			int min = infini;
@@ -224,10 +231,10 @@ void graphe::calculDateAuPlusTard()
 
             if(I[i] > -1 && min < this->plustard[i])
             { 
-                std::cout<<"On part du sommet "<<j<<std::endl;//debug
-                std::cout<<"la tache "<<i<<" passe de "<<this->plustard[i];//debug
+                // std::cout<<"On part du sommet "<<j<<std::endl;//debug
+                // std::cout<<"la tache "<<i<<" passe de "<<this->plustard[i];//debug
                 this->plustard[i] = min;
-                std::cout<<" a "<<this->plustard[i]<<std::endl<<std::endl;//debug
+                // std::cout<<" a "<<this->plustard[i]<<std::endl<<std::endl;//debug
 
                 //reorganisation du tas T [ à partir de l'indice I[i] ]
                 std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustard));
