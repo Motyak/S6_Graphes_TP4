@@ -140,7 +140,6 @@ void graphe::calculDateAuPlusTot()
 	int* T = new int[this->n + 1];
     int* I = new int[this->n + 1];
     this->plustot = new int[this->n + 1];
-    int* pere = new int[this->n + 1];
 
 	int i = 0;
     for(; i < this->n ; ++i)
@@ -150,10 +149,10 @@ void graphe::calculDateAuPlusTot()
     this->plustot[0] = 0;
     for(i = 1 ; i < this->n + 1 ; ++i)
         this->plustot[i] = -infini;
-    /* tableau pere initialisé à 0 par défaut en c++ */
+
     int j = 0;  //noeud pivot initial
 
-    for(int l = 1 ; l < this->n + 1  ; ++l)
+    for(int l = 1 ; l <= this->n + 1  ; ++l)
     {
         // pour chaque successeur de j..
         for(sommetadjacent s : this->Lsucc[j])
@@ -163,8 +162,10 @@ void graphe::calculDateAuPlusTot()
 
             if(I[i] > -1 && sum > this->plustot[i])
             { 
+                // std::cout<<"On part du sommet "<<j<<std::endl;//debug
+                // std::cout<<"la tache "<<i<<" passe de "<<this->plustot[i];//debug
                 this->plustot[i] = sum;
-                pere[i] = j;
+                // std::cout<<" a "<<this->plustot[i]<<std::endl<<std::endl;//debug
 
                 //reorganisation du tas T [ à partir de l'indice I[i] ]
                 std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
@@ -172,7 +173,8 @@ void graphe::calculDateAuPlusTot()
         }
 
         //Recherche dans T, de l'indice j de plus grande valeur d[i]
-        j = T[0]; //sinon j reste à 0
+        // j = T[0]; //sinon j reste à 0
+        j++;    //topologique
 
         //Suppression de l'indice j du tas (premier element tas)
         std::pop_heap(T, T + this->n + 1 - l, Cmp(this->plustot));
@@ -190,7 +192,6 @@ void graphe::calculDateAuPlusTard()
 	int* T = new int[this->n + 1];
     int* I = new int[this->n + 1];
     this->plustard = new int[this->n + 1];
-    int* pere = new int[this->n + 1];
 
 	int i = 0;
     for(; i < this->n ; ++i)
@@ -199,30 +200,34 @@ void graphe::calculDateAuPlusTard()
         I[i] = i - 1;
     this->plustard[0] = 0;
     for(i = 1 ; i < this->n + 1 ; ++i)
-        this->plustard[i] = -infini;
+        this->plustard[i] = infini;
 	this->plustard[this->n + 1] = this->plustot[this->n + 1];	//
 
-    /* tableau pere initialisé à 0 par défaut en c++ */
     int j = this->n + 1;  //noeud pivot initial
 
-    for(int l = 1 ; l < this->n + 1  ; ++l)
+    for(int l = 1 ; l <= this->n + 1  ; ++l)
     {
         // pour chaque predecesseur de j..
         for(sommetadjacent s : this->Lpred[j])
         {
+            std::cout<<"Le sommet j a des predecesseurs"<<std::endl;//debug
             int i = s.first, cji = s.second;
 
 			int min = infini;
-			for(int z = j ; z <= this->n + 1 ; ++z)
+            for(int z = j  ; z <= this->n + 1 ; ++z)
 			{
-				if(this->plustard[z] - cji < min)
-					min = this->plustard[z] - cji;
+                // si l'étape en question est bien sucesseur de z.
+                if(std::find(this->Lpred[z].begin(), this->Lpred[z].end(), s) != this->Lpred[z].end())
+				    if(this->plustard[z] - cji < min)
+					    min = this->plustard[z] - cji;
 			}
 
-            if(I[i] > -1 && min > this->plustard[i])
+            if(I[i] > -1 && min < this->plustard[i])
             { 
+                std::cout<<"On part du sommet "<<j<<std::endl;//debug
+                std::cout<<"la tache "<<i<<" passe de "<<this->plustard[i];//debug
                 this->plustard[i] = min;
-                pere[i] = j;
+                std::cout<<" a "<<this->plustard[i]<<std::endl<<std::endl;//debug
 
                 //reorganisation du tas T [ à partir de l'indice I[i] ]
                 std::make_heap(T, T + this->n + 1 - l, Cmp(this->plustard));
@@ -230,7 +235,8 @@ void graphe::calculDateAuPlusTard()
         }
 
         //Recherche dans T, de l'indice j de plus grande valeur d[i]
-        j = T[0]; //sinon j reste à 0
+        // j = T[0]; //sinon j reste à 0
+        --j;
 
         //Suppression de l'indice j du tas (premier element tas)
         std::pop_heap(T, T + this->n + 1 - l, Cmp(this->plustard));
