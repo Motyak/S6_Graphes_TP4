@@ -35,29 +35,37 @@ graphe::graphe(char* filename)
 
     file >> this->n;
     
-    int duree[this->n];
-	for(int i = 0 ; i < this->n ; ++i)
+	//on ajoute la source a 0
+    int duree[this->n + 1]; 
+	duree[0] = 0;
+	this->Lpred.push_back(std::vector<sommetadjacent>());
+	this->Lsucc.push_back(std::vector<sommetadjacent>());
+	
+
+	for(int i = 1 ; i <= this->n ; ++i)
 	{
 		file >> duree[i];
 		this->Lpred.push_back(std::vector<sommetadjacent>());
 		this->Lsucc.push_back(std::vector<sommetadjacent>());
 	}
+
+// ajout predecesseur de la premiere tache et successeur de la source
+	this->Lpred[1].push_back(make_pair(0, duree[1]));
+	this->Lsucc[0].push_back(make_pair(1, duree[1]));
 		
 
 	int idTache, nbPred, pred;
 
-	for(int i = 0 ; i < this->n ; ++i) 
+	for(int i = 1 ; i <= this->n ; ++i) 
 	{
 		file >> idTache;
-		--idTache;
 		file >> nbPred;
 
 		for(int i = 1 ; i <= nbPred ; ++i)
 		{
 			file >> pred;
-			--pred;
-			this->Lpred[idTache].push_back(std::make_pair(pred, duree[pred]));
-			this->Lsucc[pred].push_back(std::make_pair(idTache, duree[pred]));
+			this->Lpred[idTache].push_back(std::make_pair(pred, duree[idTache]));
+			this->Lsucc[pred].push_back(std::make_pair(idTache, duree[idTache]));
 		}
 	}
         
@@ -87,7 +95,8 @@ void graphe::resultats()
 	cout << "-------------------------" << endl;
 	cout << " Debut \t| " << "+tôt\t| " << "+tard" << "\t|" << endl;
 	cout << "-------------------------" << endl;
-	for(int i = 0; i < n; i++)
+	// for(int i = 0; i < n; i++)
+	for(int i = 1; i < n + 1; i++)
 		cout << i << " \t| " << plustot[i] << "\t| " << plustard[i] << "\t|" << endl;
 	cout << "-------------------------" << endl;
 }
